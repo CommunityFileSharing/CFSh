@@ -25,5 +25,8 @@ namespace CFSh_backend.Helpers
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<ThiccClient> ThiccClient { get; set; }
+        public DbSet<File> Files { get; set; }
+        public DbSet<FileShard> FileShards { get; set; }
     }
 }

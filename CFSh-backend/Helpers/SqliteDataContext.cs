@@ -18,6 +18,6 @@ namespace CFSh_backend.Helpers
             options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase"));
         }
 
-        public DbSet<CFSh_backend.Model.ThiccClient> ThiccClient { get; set; }
+ 
     }
 }

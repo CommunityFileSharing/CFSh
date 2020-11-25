@@ -34,6 +34,10 @@ namespace CFSh_backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = null; // or your desired value
+            });
             // use sql server db in production and sqlite db in development
             if (_env.IsProduction())
                 services.AddDbContext<DataContext>();
@@ -86,13 +90,15 @@ namespace CFSh_backend
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
+            services.AddSingleton<SqliteDataContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext)
         {
             // migrate any database changes on startup (includes initial db creation)
-            dataContext.Database.EnsureCreated(); // .Migrate();
+            dataContext.Database.EnsureCreated();
+            
 
             app.UseRouting();
 

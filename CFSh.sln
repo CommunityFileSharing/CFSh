@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CFSh-backend", "CFSh-backend\CFSh-backend.csproj", "{D7757808-D66A-4EFD-8ED1-25C5AEE29092}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CFSh-backend", "CFSh-backend\CFSh-backend.csproj", "{D7757808-D66A-4EFD-8ED1-25C5AEE29092}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThiccClient", "ThiccClient\ThiccClient.csproj", "{DCA9EFAE-5421-4A60-BE47-94399E9B866A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D7757808-D66A-4EFD-8ED1-25C5AEE29092}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7757808-D66A-4EFD-8ED1-25C5AEE29092}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7757808-D66A-4EFD-8ED1-25C5AEE29092}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCA9EFAE-5421-4A60-BE47-94399E9B866A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCA9EFAE-5421-4A60-BE47-94399E9B866A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCA9EFAE-5421-4A60-BE47-94399E9B866A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCA9EFAE-5421-4A60-BE47-94399E9B866A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

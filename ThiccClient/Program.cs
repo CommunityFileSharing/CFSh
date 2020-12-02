@@ -12,65 +12,52 @@ namespace ThiccClient
 {
     class Program
     {
-        private static readonly HttpClient client = new HttpClient();
-
-        private static async Task<string> Post(string uri, Dictionary<string, string> values)
-        {            
-
-            var content = new FormUrlEncodedContent(values);
-
-            var response = await client.PostAsync(uri, content);
-
-            return await response.Content.ReadAsStringAsync();
-        }
-
-
         static void Main(string[] args)
         {
+            Config Config = Config.Load();
 
-        //public int Id { get; set; }
-        //public int UserId { get; set; }
-        //public int FreeSpace { get; set; }
-        //public int UsedSpace { get; set; }
-        //public string IP { get; set; }
-        //public int Port { get; set; }
-            var values = new Dictionary<string, string>
+            if (Config.UserId == int.MinValue)
             {
-                { "Id", "1" },
-                { "UserId", "1" },
-                { "FreeSpace", "35234333" },
-                { "UsedSpace", "0" },
-                { "IP", "127.0.0.1" },
-                { "Port", "8888" }
-            };
-            //Console.WriteLine("Sending request...");
-            //Task task = Post("http://localhost:44367/Thicc", values);
-            //task.Wait();
-            //Console.WriteLine("Done");
+                Config.UserId = API.Login(Config.UserName, Config.UserPass);
+            }
+            if (Config.ThiccId == int.MinValue)
+            {
+                Config.ThiccId = API.ThiccLogin(Config.UserId);
+            }
+            Config.UpdateSpace();
+            Config.Save(Config);
+            long freespace = Convert.ToInt64(Config.DiskQuotaInBytes) - GetDirectorySize(Config.DataStorePath);
+            API.SignalAwake(Config.ThiccId, freespace);
 
 
-
-            TcpListener serverSocket = new TcpListener(IPAddress.Parse("127.0.0.1"), 8888);
-            TcpClient clientSocket = default(TcpClient);
-            int counter = 0;
-
+            TcpListener serverSocket = new TcpListener(IPAddress.Parse(API.GetLocalIPAddress()), Config.Port);
+            
             serverSocket.Start();
             Console.WriteLine(" >> " + "Server Started");
 
-            counter = 0;
+            int counter = 0;
             while (true)
             {
                 counter += 1;
-                clientSocket = serverSocket.AcceptTcpClient();
+                TcpClient clientSocket = serverSocket.AcceptTcpClient();
                 Console.WriteLine(" >> " + "Client No:" + Convert.ToString(counter) + " started!");
-                handleClient client = new handleClient();
+                ClientHandler client = new ClientHandler(Config);
                 client.startClient(clientSocket, Convert.ToString(counter));
             }
-
-            clientSocket.Close();
             serverSocket.Stop();
             Console.WriteLine(" >> " + "exit");
             Console.ReadLine();
+        }
+        static long GetDirectorySize(string p)
+        {
+            string[] a = Directory.GetFiles(p, "*.*");
+            long b = 0;
+            foreach (string name in a)
+            {
+                FileInfo info = new FileInfo(name);
+                b += info.Length;
+            }
+            return b;
         }
     }
 
@@ -78,7 +65,7 @@ namespace ThiccClient
     {
         private TcpListener _server;
         private Boolean _isRunning;
-        public TcpServer(int port)
+        public TcpServer(int port, string dataPath)
         {
             _server = new TcpListener(IPAddress.Any, port);
             _server.Start();
@@ -113,7 +100,7 @@ namespace ThiccClient
                 // reads from stream
                 sData = sReader.ReadLine();
                 // shows content on the console.
-                Console.WriteLine("Client > " + sData);
+                Console.WriteLine("Connection > " + sData);
                 // to write something back.
                 // sWriter.WriteLine("Meaningfull things here");
                 // sWriter.Flush();
@@ -122,15 +109,25 @@ namespace ThiccClient
     }
 
     //Class to handle each client request separatly
-    public class handleClient
+    public class ClientHandler
     {
         TcpClient clientSocket;
         string clNo;
+        Config config;
 
-        private void Write(string data, string shardId)
+        private string ShardPath(string ShardId)
         {
-            using (System.IO.StreamWriter file =
-            new System.IO.StreamWriter(shardId + ".data"))
+            return Path.Combine(config.DataStorePath, ShardId + ".data");
+        }
+
+        public ClientHandler(Config _config)
+        {
+            config = _config;
+        }
+
+        private void Write(string data, string ShardId)
+        {
+            using (StreamWriter file = new StreamWriter(ShardPath(ShardId)))
             {
                 file.Write(data);
             }
@@ -139,7 +136,7 @@ namespace ThiccClient
         {
             try
             {
-                using (System.IO.StreamReader file = new System.IO.StreamReader(ShardId + ".data"))
+                using (StreamReader file = new StreamReader(ShardPath(ShardId)))
                 {
                     return file.ReadToEnd();
                 }
@@ -169,7 +166,7 @@ namespace ThiccClient
                     {
                         int len = networkStream.Read(inStream, 0, inStream.Length);
                         if (len == 0) break;
-                        string newData = System.Text.Encoding.ASCII.GetString(inStream).Substring(0, len);
+                        string newData = Encoding.ASCII.GetString(inStream).Substring(0, len);
                         dataFromClient += newData;
                         if (newData.Length < inStream.Length) break;
                     }
@@ -213,7 +210,7 @@ namespace ThiccClient
                     clientSocket.Close();
                     break;
                 }
-                catch (System.IO.IOException)
+                catch (IOException)
                 {
                     Console.WriteLine("Connection closed");
                     break;

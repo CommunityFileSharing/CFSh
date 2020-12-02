@@ -198,6 +198,12 @@ namespace ThiccClient
                         networkStream.Write(sendBytes, 0, sendBytes.Length);
                         networkStream.Flush();
                     }
+                    else if (command[0] == "ping")
+                    {
+                        byte[] sendBytes = Encoding.ASCII.GetBytes("pong");
+                        networkStream.Write(sendBytes, 0, sendBytes.Length);
+                        networkStream.Flush();
+                    }
                     else throw new Exception("Invalid command: " + command[0]);
 
 

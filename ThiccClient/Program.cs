@@ -15,14 +15,19 @@ namespace ThiccClient
         static void Main(string[] args)
         {
             Config Config = Config.Load();
+            Log.Write(Severity.Info, "Configuration loaded");
 
             if (Config.UserId == int.MinValue)
             {
+                Log.Write(Severity.Info, "User ID not found, attempting login");
                 Config.UserId = API.Login(Config.UserName, Config.UserPass);
+                Log.Write(Severity.Info, "Login successful");
             }
             if (Config.ThiccId == int.MinValue)
             {
+                Log.Write(Severity.Info, "ThiccClient ID not found, advertising to server " + Config.ServerUrl);
                 Config.ThiccId = API.ThiccLogin(Config.UserId);
+                Log.Write(Severity.Info, "Client login successful, out ID is " + Config.ThiccId);
             }
             Config.UpdateSpace();
             Config.Save(Config);
@@ -33,15 +38,15 @@ namespace ThiccClient
             TcpListener serverSocket = new TcpListener(IPAddress.Parse(API.GetLocalIPAddress()), Config.Port);
             
             serverSocket.Start();
-            Console.WriteLine(" >> " + "Server Started");
+            Log.Write(Severity.Info, "Server Started");
 
             int counter = 0;
             while (true)
             {
                 counter += 1;
                 TcpClient clientSocket = serverSocket.AcceptTcpClient();
-                Console.WriteLine(" >> " + "Client No:" + Convert.ToString(counter) + " started!");
-                ClientHandler client = new ClientHandler(Config);
+                Log.Write(Severity.Info, "Spawning client: conn" + counter);
+                ClientHandler client = new ClientHandler(Config, "conn" + counter);
                 client.startClient(clientSocket, Convert.ToString(counter));
             }
             serverSocket.Stop();
@@ -120,9 +125,10 @@ namespace ThiccClient
             return Path.Combine(config.DataStorePath, ShardId + ".data");
         }
 
-        public ClientHandler(Config _config)
+        public ClientHandler(Config _config, string _clNo)
         {
             config = _config;
+            clNo = _clNo;
         }
 
         private void Write(string data, string ShardId)
@@ -176,16 +182,18 @@ namespace ThiccClient
                     if (command[0] == "recv")
                     {
                         // write to file
+                        Log.Write(Severity.Info, clNo + "|Recieving data, shard ID is " + command[1]);
                         Write(data[1], command[1]);
                         string serverResponse = "ook";
                         byte[] sendBytes = Encoding.ASCII.GetBytes(serverResponse);
                         networkStream.Write(sendBytes, 0, sendBytes.Length);
                         networkStream.Flush();
-                        Console.WriteLine(" >> " + serverResponse);
+                        Log.Write(Severity.Info, clNo + "|Recieving successful");
                     }
                     else if (command[0] == "send")
                     {
                         //read from file & send
+                        Log.Write(Severity.Info, clNo + "|Sending data, shard ID is " + command[1]);
                         string shardData = Read(command[1]);
                         if (shardData == null)
                         {
@@ -194,12 +202,15 @@ namespace ThiccClient
                         byte[] sendBytes = Encoding.ASCII.GetBytes(shardData);
                         networkStream.Write(sendBytes, 0, sendBytes.Length);
                         networkStream.Flush();
+                        Log.Write(Severity.Info, clNo + "|Shard " + command[1]+" uploaded");
                     }
                     else if (command[0] == "ping")
                     {
+                        Log.Write(Severity.Info, clNo + "|Ping request");
                         byte[] sendBytes = Encoding.ASCII.GetBytes("pong");
                         networkStream.Write(sendBytes, 0, sendBytes.Length);
                         networkStream.Flush();
+                        Log.Write(Severity.Info, clNo + "|Pong sent");
                     }
                     else throw new Exception("Invalid command: " + command[0]);
 
@@ -212,12 +223,12 @@ namespace ThiccClient
                 }
                 catch (IOException)
                 {
-                    Console.WriteLine("Connection closed");
+                    Console.WriteLine(clNo + "|Connection closed");
                     break;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(" >> " + ex.ToString());
+                    Log.Write(Severity.Error, clNo + "|"+ex.ToString());
                     break;
                 }
             }

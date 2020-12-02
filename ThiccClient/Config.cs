@@ -29,19 +29,21 @@ namespace ThiccClient
         public string UserPass { get; set; }
         public string UserName { get; set; }
         public int Port { get; set; }
-        public int DiskQuotaInBytes { get; set; }
+        public long DiskQuotaInBytes { get; set; }
         public string DataStorePath { get; set; }
 
-        private static int IntInput(string message, bool byteSize = false)
+        public int LogLevel = 3;
+
+        private static long IntInput(string message, bool byteSize = false)
         {
             Console.WriteLine(message);
-            int ret = int.MinValue;
+            long ret = int.MinValue;
             while (ret == int.MinValue)
             {
                 try {
                     string input = Console.ReadLine();
                     if (byteSize)  ret = GetByteCount(input);
-                    else ret = Convert.ToInt32(input);
+                    else ret = Convert.ToInt64(input);
                 }
                 catch (Exception e)
                 {
@@ -58,7 +60,7 @@ namespace ThiccClient
             return Console.ReadLine();
         }
 
-        private static int GetByteCount(string input)
+        private static long GetByteCount(string input)
         {
             List<char> prefixes = new List<char>();
             char[] a = { 'K', 'M', 'G', 'T', 'P', 'E' };
@@ -68,8 +70,8 @@ namespace ThiccClient
             {
                 char prefixChar = input[input.Length - 1].ToString().ToUpper().ToCharArray()[0];
                 int prefixIndex = prefixes.IndexOf(prefixChar);
-                int power = Convert.ToInt32(Math.Pow(10, 3 * (1 + prefixIndex)));
-                int bbase = Convert.ToInt32(input.Remove(input.Length - 1));
+                long power = Convert.ToInt64(Math.Pow(10, 3 * (1 + prefixIndex)));
+                long bbase = Convert.ToInt32(input.Remove(input.Length - 1));
                 return bbase * power;
             }
             else 
@@ -92,7 +94,7 @@ namespace ThiccClient
                 Config config = new Config {
                     UserName = StringInput("Username: "),
                     UserPass = StringInput("Password: "),
-                    Port = IntInput("Network port: "),
+                    Port = (int)IntInput("Network port: "),
                     DiskQuotaInBytes = IntInput("Allocated space: ", true),
                     DataStorePath = StringInput("Path ot store data: "),
                     ThiccId = int.MinValue

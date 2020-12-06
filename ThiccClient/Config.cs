@@ -97,6 +97,7 @@ namespace ThiccClient
                     Port = (int)IntInput("Network port: "),
                     DiskQuotaInBytes = IntInput("Allocated space: ", true),
                     DataStorePath = StringInput("Path ot store data: "),
+                    UserId = int.MinValue,
                     ThiccId = int.MinValue
                 };
                 Save(config);

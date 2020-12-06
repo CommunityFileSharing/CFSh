@@ -20,17 +20,19 @@ namespace ThiccClient
             if (Config.UserId == int.MinValue)
             {
                 Log.Write(Severity.Info, "User ID not found, attempting login");
-                Config.UserId = API.Login(Config.UserName, Config.UserPass);
+                Config.UserId = API.Login(Config);
                 Log.Write(Severity.Info, "Login successful");
             }
             if (Config.ThiccId == int.MinValue)
             {
                 Log.Write(Severity.Info, "ThiccClient ID not found, advertising to server " + Config.ServerUrl);
-                Config.ThiccId = API.ThiccLogin(Config.UserId);
+                Config.ThiccId = API.ThiccLogin(Config);
                 Log.Write(Severity.Info, "Client login successful, out ID is " + Config.ThiccId);
             }
             Config.UpdateSpace();
             Config.Save(Config);
+            
+            Directory.CreateDirectory(Config.DataStorePath);
             long freespace = Convert.ToInt64(Config.DiskQuotaInBytes) - GetDirectorySize(Config.DataStorePath);
             API.SignalAwake(Config.ThiccId, freespace);
 

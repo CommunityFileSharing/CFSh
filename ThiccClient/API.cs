@@ -5,11 +5,14 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace ThiccClient
 {
     class API
     {
+        private static int userId = 0;
+        private static int thiccId = 0;
         private static readonly HttpClient client = new HttpClient();
         private static async Task<string> Post(string uri, Dictionary<string, string> values)
         {
@@ -21,14 +24,40 @@ namespace ThiccClient
             return await response.Content.ReadAsStringAsync();
         }
 
-        public static int Login(string username, string password)
+        public static int Login(Config config)
         {
-            throw new NotImplementedException();
+            int id = userId;
+            userId += 1;
+
+            string content = @"{{
+                ""username"": ""{0}"",
+                ""password"": ""{1}""
+            }}";
+
+            content = string.Format(content, config.UserName, config.UserPass);
+            client.PostAsync("http://localhost:44367/api/Users/authenticate", new StringContent(content, Encoding.UTF8, "application/json"));
+            
+            return id;
         }
 
-        public static int ThiccLogin(int userId)
+        public static int ThiccLogin(Config config)
         {
-            throw new NotImplementedException();
+            int id = thiccId;
+            thiccId += 1;
+
+            string content = @"{{
+                ""Id"": ""{0}"",
+                ""UserId"": ""{1}"",
+                ""FreeSpace"": ""{2}"",
+                ""UsedSpace"": ""0"",
+                ""Ip"": ""127.0.0.1"",
+                ""Port"": ""{3}""
+            }}";
+
+            content = string.Format(content, id, config.UserId, config.DiskQuotaInBytes, config.Port);
+            client.PostAsync("http://localhost:44367/api/Thicc", new StringContent(content, Encoding.UTF8, "application/json"));
+
+            return id;
         }
 
         public static string GetLocalIPAddress()

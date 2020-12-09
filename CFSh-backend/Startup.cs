@@ -99,7 +99,8 @@ namespace CFSh_backend
             // migrate any database changes on startup (includes initial db creation)
             dataContext.Database.EnsureCreated();
             
-
+            app.UseStaticFiles();
+            
             app.UseRouting();
 
             // global cors policy

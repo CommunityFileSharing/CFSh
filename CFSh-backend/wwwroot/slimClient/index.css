@@ -1,0 +1,187 @@
+body {
+    padding: 0;
+    margin: 0;
+    background-color: rgb(230, 230, 230);
+}
+
+.center,
+.center-little {
+    display: inline-block;
+}
+
+.center {
+  width: 100%;
+}
+
+.center-little {
+    border: 2px solid blue;
+    background-color: white;
+}
+.td-center {
+    text-align: center;
+    vertical-align: top;
+    padding: 15px;
+}
+
+.container-little {
+  width: 100%;
+  height: 60%;
+  position: absolute;
+}
+
+.table-center {
+  width: 100%;
+  height: 100%;
+  padding-top: 10px;
+}
+
+.container {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    top: 51px;
+    left: 7%;
+    width: 84%;
+    overflow: auto;
+    background-color: white;
+    box-shadow: 4px 4px 4px rgba(0.0,0.0,128,0.15), -4px -4px 4px rgba(0.0,0.0,128,0.15);
+}
+.formelem {
+    margin: 5px;
+    font-weight: bold;
+}
+.formsubmit * {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+.smallfont {
+    font-size: 14;
+}
+
+.menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 47px;
+    z-index: 1000;
+    background-color: rgb(187, 187, 255);
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+    box-shadow: 8px 8px 8px rgba(255, 255, 255, 0.4) inset, -8px -8px 8px rgba(255, 255, 255, 0.4) inset,  3px 3px 3px rgba(0, 0, 0, 0.3);
+}
+
+.filter-menu-elem {
+  width: 70%;
+}
+
+.file-filter {
+  height: 45px;
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  color: grey;
+  background: #fff;
+  box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.05) inset, -8px -8px 8px rgba(0, 0, 0, 0.05) inset;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.file-filter:focus {
+  color: black;
+  border: 1px solid black;
+}
+
+.menuelem {
+    height: 47px;
+    width: 15%;
+}
+
+.gen-button, .menubutton, .file-button {
+  background-color: rgba(240, 240, 240);
+  border: none;
+  display: inline-block;
+  padding: 8px 16px;
+  vertical-align: middle;
+  text-align: center;
+  overflow: hidden;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap ;
+  min-width: 80px;
+  transition: box-shadow 40ms;
+}
+
+.gen-button, .menubutton, .file-button {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none
+}
+
+.gen-button:disabled,  .menubutton:disabled, .file-button:disabled, .file-filter:disabled {
+  cursor: not-allowed;
+  opacity: 0.3
+}
+
+.gen-button:hover {
+  color: #000;
+  background-color: rgba(230, 230, 230);
+  box-shadow: 5px 5px 5px rgba(150, 150, 150, 0.3)  inset, -5px -5px 5px rgba(150, 150, 150, 0.3) inset;
+}
+
+.gen-button:active {
+  background-color: rgba(220, 220, 220);
+  box-shadow: 5px 5px 5px rgba(130, 130, 130, 0.3)  inset, -5px -5px 5px rgba(130, 130, 130, 0.3) inset;
+}
+
+.file-cont {
+  border: 1px solid rgb(170, 200, 240);
+  background-color: rgb(170, 200, 240);
+  box-shadow: 7px 7px 7px rgba(255, 255, 255, 0.3) inset, -7px -7px 7px rgba(255, 255, 255, 0.3) inset;
+}
+
+.progress-cont {
+  margin-bottom: 2px;
+  margin-top: 10px;
+}
+
+.file-button {
+  background-color: rgba(170, 200, 240, 0);
+}
+
+.file-button:hover {
+  color: #000;
+  box-shadow: 7px 7px 7px rgba(90, 120, 150, 0.4)  inset, -7px -7px 7px rgba(90, 120, 150, 0.4) inset;
+}
+
+.file-button:active {
+  box-shadow: 7px 7px 7px rgba(60, 90, 120, 0.5)  inset, -7px -7px 7px rgba(60, 90, 120, 0.5) inset;
+}
+
+.menubutton {
+    width: 100%;
+    height: 100%;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    background-color: inherit;
+    margin: 0;
+    font-size: 18px;
+}
+
+.menubutton:hover {
+  color: #000;
+  box-shadow: 5px 5px 5px rgba(120, 120, 180, 0.3)  inset, -5px -5px 5px rgba(120, 120, 180, 0.3) inset;
+}
+
+.menubutton:active {
+  box-shadow: 5px 5px 5px rgba(110, 110, 170, 0.4)  inset, -5px -5px 5px rgba(110, 110, 170, 0.4) inset;
+}
+
+.menuspacer {
+    width: 40%;
+}

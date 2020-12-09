@@ -106,12 +106,14 @@ namespace CFSh_backend.Controllers
             _context.Files.Add(file);
             await _context.SaveChangesAsync();
 
+            var rnd = new Random();
+
             foreach (string chunk in Split(fileContent.Content, (fileContent.Content.Length + 3) / 3))
             {
                 System.Diagnostics.Debug.WriteLine("Processing string chunk, size: " + chunk.Length);
                 int replicas = 0;
                 int replicaExpected = 1;
-                foreach (ThiccClient client in (from t in _context.ThiccClient where t.FreeSpace > chunk.Length select t).ToList())
+                foreach (ThiccClient client in (from t in _context.ThiccClient where t.FreeSpace > chunk.Length select t).ToList().OrderBy(a => rnd.Next()))
                 {
                     //try
                     //{

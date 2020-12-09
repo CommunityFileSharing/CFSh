@@ -1,13 +1,13 @@
 import requests
 
-with open("data.txt") as f:
+with open("test_enc.txt") as f:
     data = f.read()
                     
 vals = {"Content": data,
     "Name": "test",
-    "Owner": 3}
+    "Owner": 1}
 
-url = "http://localhost:50268/api/File"
+url = "http://localhost:5000/api/File"
 
 x = requests.post(url, json=vals)
 

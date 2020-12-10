@@ -38,33 +38,41 @@ namespace CFSh_backend.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] Authenticate model)
         {
-            var user = _userService.Authenticate(model.Username, model.Password);
+            // var user = _userService.Authenticate(model.Username, model.Password);
 
-            if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+            // if (user == null)
+            //     return BadRequest(new { message = "Username or password is incorrect" });
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
+            // var tokenHandler = new JwtSecurityTokenHandler();
+            // var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            // var tokenDescriptor = new SecurityTokenDescriptor
+            // {
+            //     Subject = new ClaimsIdentity(new Claim[]
+            //     {
+            //         new Claim(ClaimTypes.Name, user.Id.ToString())
+            //     }),
+            //     Expires = DateTime.UtcNow.AddDays(7),
+            //     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            // };
+            // var token = tokenHandler.CreateToken(tokenDescriptor);
+            // var tokenString = tokenHandler.WriteToken(token);
 
-            // return basic user info and authentication token
+            // // return basic user info and authentication token
+            // return Ok(new
+            // {
+            //     Id = user.Id,
+            //     Username = user.Username,
+            //     FirstName = user.FirstName,
+            //     LastName = user.LastName,
+            //     Token = tokenString
+            // });
             return Ok(new
             {
-                Id = user.Id,
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Token = tokenString
+                Id = 1,
+                Username = "user.Username",
+                FirstName = "user.FirstName",
+                LastName = "user.LastName",
+                Token = "tokenString"
             });
         }
 

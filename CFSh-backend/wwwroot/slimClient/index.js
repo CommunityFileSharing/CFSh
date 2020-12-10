@@ -35,16 +35,19 @@ const appheaderComp = {
 }
 
 const uploadComp = {
+  props: ['userid'],
   data() {
     return {
       prog: 0,
-      status: "File not selected..."
+      status: "File not selected...",
+      filenameke: ""
     }
   },
   methods: {
     onChange(e) {
       const file = document.getElementById('up-file-input').files[0];
       if (file) {
+        this.filenameke = file.name
         this.processFile(file);
       }
     },
@@ -71,15 +74,45 @@ const uploadComp = {
     },
     loaded(e) {
       this.changeStatus('Load ended!');
+      console.log(e)
       this.prog = 100;
       const fr = e.target
       var result = fr.result;
-      console.log('result:')
+
+      console.log('result filename:')
       console.log(result)
+      this.upload(result, e.target.FileName)
       console.info("TODO implement upload to server")
     },
     errorHandler(e) {
       this.changeStatus("Error: " + e.target.error.name)
+    },
+    upload(content, filename) {
+      const Http = new XMLHttpRequest();
+      const url='http://127.0.0.1:5000/api/File/';
+      const reqDat = {
+        "Content": btoa(content),
+        "Name": this.filenameke,
+        "Owner" : this.userid
+      }
+
+      //xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
+      //xhr.onload = requestComplete;
+
+      Http.open("POST", url);
+      Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      Http.onreadystatechange = (e) => {
+        console.log(Http.statusText)
+        this.onAnswer(Http.responseText)
+      }
+      Http.send(JSON.stringify(reqDat));
+
+      
+    },
+    onAnswer(response) {
+      console.log("Upload resp " + response)
+      if(response !== "") {
+      }
     }
   },
   template: `<div class="container">
@@ -118,7 +151,7 @@ const loginComp = {
       Http.open("POST", url);
       Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       Http.onreadystatechange = (e) => {
-        console.log(Http.statusText)
+        console.log("Login stat: " + Http.statusText)
         this.onAnswer(Http.responseText)
       }
       Http.send(JSON.stringify(reqDat));
@@ -126,9 +159,9 @@ const loginComp = {
       
     },
     onAnswer(response) {
-      console.log(response)
+      console.log("Login resp" + response)
       if(response !== "") {
-        this.$emit('logged-in', this.username)
+        this.$emit('logged-in', response.Id)
       }
     }
   },
@@ -260,6 +293,48 @@ const fileListComp = {
   methods: {
     filterName(fileName) {
       return fileName.includes(this.filter)
+    },
+    download(id, name) {
+      console.info("TODO implement files")
+      const Http = new XMLHttpRequest();
+      const url='http://127.0.0.1:5000/api/File/' + id;
+
+      //xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
+      //xhr.onload = requestComplete;
+
+      Http.open("GET", url);
+      Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      Http.onreadystatechange = (e) => {
+        if(Http.readyState === 4) {
+          console.log("Donwload" + Http.statusText)
+          this.onAnswer(Http.response, name)
+        }
+      }
+      Http.send();
+
+      
+    },
+    onAnswer(response, name) {
+      
+        console.log("download" + response)
+        var jsonObj = JSON.parse(response);
+        console.log("download OBJ")
+        console.log(jsonObj)
+        if(jsonObj) {
+          this.downloadFile(name, atob(jsonObj.content))
+        }
+    },
+    downloadFile(filename, text) {
+      var element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+    
+      element.style.display = 'none';
+      document.body.appendChild(element);
+    
+      element.click();
+    
+      document.body.removeChild(element);
     }
   },
   template: `<div class="container">
@@ -272,7 +347,7 @@ const fileListComp = {
                       </div>
                       <template v-for="file in files">
                         <div v-if="filterName(file.name)" class="file-cont">
-                          <button style="width: 80%" class="file-button">{{ file.name }}</button>
+                          <button style="width: 80%" class="file-button" @click="download(file.id, file.name)">{{ file.name }}</button>
                           <button style="width: 20%" class="file-button" disabled=true>Delete</button>
                         </div>
                       </template>
@@ -291,11 +366,7 @@ app.component('root-comp', {
       filter: "",
       isMenu: false,
       views: ['Login', 'Register', 'List', 'Upload'],
-      files: [{
-        name: "1-es fájl"
-      }, {
-        name: "2-es fájl"
-      }]
+      files: []
     }
   },
   methods: {
@@ -318,9 +389,11 @@ app.component('root-comp', {
       this.greetname = username
       this.currentView = 'List'
       this.isMenu = true
+      this.getFiles()
     },
     showList() {
       this.currentView = 'List'
+      this.getFiles()
     },
     onLogin() {
       this.currentView = 'Login'
@@ -334,6 +407,42 @@ app.component('root-comp', {
     onLogout() {
       this.currentView = 'Login'
       this.isMenu = false
+    },
+    getFiles() {
+      console.info("TODO implement getfiles")
+      const Http = new XMLHttpRequest();
+      const url='http://127.0.0.1:5000/api/File/user/' + this.greetname;
+
+      //xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
+      //xhr.onload = requestComplete;
+
+      Http.open("GET", url);
+      Http.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      Http.onreadystatechange = (e) => {
+        if(Http.readyState === 4) {
+        console.log("GetFiles" + Http.statusText)
+        this.onAnswer(Http.response)
+        }
+      }
+      Http.send();
+
+      
+    },
+    onAnswer(response) {
+      
+        console.log("GetFiles" + response)
+        var jsonObj = JSON.parse(response);
+        console.log("JSON OBJ")
+        console.log(jsonObj)
+        this.files = jsonObj
+        var asd = []
+        if(jsonObj) {
+          for(var i in jsonObj) {
+            if(i !== undefined)
+              asd.push({name: jsonObj[i].name, id: jsonObj[i].id});
+          }
+          this.files = asd
+        }
     }
   },
   components: {
@@ -347,7 +456,7 @@ app.component('root-comp', {
     <login v-if="isLogin()" @logged-in="onLoggedIn($event)" @register-req="onRegister()"></login>
     <register v-if="isRegister()" @logged-in="onLoggedIn($event)" @login-req="onLogin()"></register>
     <file-list v-if="isList()" :filter="filter" :files=files></file-list>
-    <upload v-if="isUpload()"></upload>`
+    <upload v-if="isUpload()" :userid="greetname"></upload>`
 })
 
 var vs = app.mount('#mainapp')

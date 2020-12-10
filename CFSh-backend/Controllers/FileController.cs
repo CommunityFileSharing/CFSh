@@ -50,6 +50,12 @@ namespace CFSh_backend.Controllers
             _context = context;
         }
 
+        //api/file/user/id
+        [HttpGet("user/{id}")]
+        public async Task<ActionResult<List<File>>> GetFiles(int userId) {
+            return (from f in _context.Files where f.Owner == userId select f).ToList();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<FileContent>> DownloadFile(int Id)
         {
